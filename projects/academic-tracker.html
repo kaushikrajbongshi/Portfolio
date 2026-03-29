@@ -1,0 +1,1583 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academic Module Tracker — Case Study · Kaushik Rajbongshi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #07070f;
+        --card: #0e0e1c;
+        --text: #e4e4f0;
+        --dim: #555570;
+        --dim2: #888899;
+        --accent: #c8ff00;
+        --border: rgba(255, 255, 255, 0.06);
+      }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        line-height: 1.6;
+        overflow-x: hidden;
+        cursor: none;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      #cur {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+      }
+      #cur-ring {
+        position: fixed;
+        width: 36px;
+        height: 36px;
+        border: 1.5px solid rgba(200, 255, 0, 0.3);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.25s,
+          height 0.25s;
+      }
+      ::-webkit-scrollbar {
+        width: 3px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9000;
+        opacity: 0.5;
+      }
+
+      /* NAV */
+      .cs-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 22px 64px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 200;
+        background: linear-gradient(
+          to bottom,
+          rgba(7, 7, 15, 0.95),
+          transparent
+        );
+      }
+      .cs-nav-back {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--dim);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.3s;
+      }
+      .cs-nav-back:hover {
+        color: var(--accent);
+      }
+      .cs-nav-name {
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: var(--dim2);
+        text-transform: uppercase;
+      }
+
+      /* HERO */
+      .cs-hero {
+        padding: 140px 64px 80px;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+      }
+      .cs-hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: radial-gradient(
+          ellipse at top right,
+          rgba(200, 255, 0, 0.04),
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      .cs-project-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(200, 255, 0, 0.25);
+        padding: 5px 14px;
+        margin-bottom: 28px;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .cs-title {
+        font-family: "Syne", sans-serif;
+        font-size: clamp(40px, 7vw, 96px);
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: -3px;
+        margin-bottom: 32px;
+      }
+      .cs-title .outline {
+        -webkit-text-stroke: 1.5px rgba(228, 228, 240, 0.2);
+        color: transparent;
+      }
+      .cs-subtitle {
+        color: var(--dim2);
+        font-size: 18px;
+        line-height: 1.75;
+        max-width: 640px;
+        margin-bottom: 44px;
+      }
+      .cs-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        padding-top: 36px;
+        border-top: 1px solid var(--border);
+      }
+      .cs-meta-item .label {
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin-bottom: 6px;
+      }
+      .cs-meta-item .value {
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .cs-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .cs-tag {
+        padding: 3px 10px;
+        border: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--dim2);
+      }
+
+      /* CONTENT */
+      .cs-body {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 80px 64px;
+      }
+      .cs-section {
+        margin-bottom: 80px;
+      }
+      .cs-section-num {
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .cs-section-title {
+        font-family: "Syne", sans-serif;
+        font-size: clamp(24px, 3.5vw, 40px);
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.1;
+        margin-bottom: 28px;
+      }
+      .cs-text {
+        color: var(--dim2);
+        font-size: 16px;
+        line-height: 1.9;
+        margin-bottom: 18px;
+      }
+      .cs-text strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .cs-text em {
+        color: var(--accent);
+        font-style: normal;
+      }
+
+      /* PROBLEM CARDS */
+      .problem-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+      .problem-card {
+        padding: 24px 22px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 2px solid var(--accent);
+      }
+      .problem-card .ico {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      .problem-card .head {
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .problem-card .body {
+        color: var(--dim);
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+
+      /* ARCHITECTURE */
+      .arch-diagram {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 40px;
+        margin: 28px 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .arch-diagram::before {
+        content: "SYSTEM ARCHITECTURE";
+        position: absolute;
+        top: 16px;
+        left: 20px;
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .arch-layers {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .arch-layer {
+        display: flex;
+        align-items: center;
+        gap: 0;
+      }
+      .arch-box {
+        flex: 1;
+        padding: 14px 18px;
+        text-align: center;
+        position: relative;
+      }
+      .arch-box .box-label {
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .arch-box .box-tech {
+        font-size: 10.5px;
+        color: var(--dim);
+        letter-spacing: 0.5px;
+      }
+      .arch-box.frontend {
+        background: rgba(200, 255, 0, 0.06);
+        border: 1px solid rgba(200, 255, 0, 0.2);
+      }
+      .arch-box.auth {
+        background: rgba(255, 100, 100, 0.06);
+        border: 1px solid rgba(255, 100, 100, 0.15);
+      }
+      .arch-box.backend {
+        background: rgba(100, 150, 255, 0.06);
+        border: 1px solid rgba(100, 150, 255, 0.15);
+      }
+      .arch-box.db {
+        background: rgba(100, 200, 100, 0.06);
+        border: 1px solid rgba(100, 200, 100, 0.15);
+      }
+      .arch-arrow {
+        display: flex;
+        justify-content: center;
+        padding: 8px 0;
+        color: var(--dim);
+        font-size: 18px;
+      }
+      .arch-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 0;
+      }
+
+      /* DB TABLES */
+      .db-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+      .db-table {
+        background: var(--card);
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .db-table-head {
+        background: rgba(200, 255, 0, 0.07);
+        border-bottom: 1px solid rgba(200, 255, 0, 0.15);
+        padding: 10px 16px;
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+      .db-field {
+        padding: 7px 16px;
+        font-size: 11.5px;
+        color: var(--dim2);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .db-field:last-child {
+        border-bottom: none;
+      }
+      .db-field .ftype {
+        font-size: 10px;
+        color: var(--dim);
+        letter-spacing: 0.5px;
+      }
+      .db-field .fkey {
+        font-size: 9px;
+        padding: 1px 6px;
+        background: rgba(200, 255, 0, 0.08);
+        border: 1px solid rgba(200, 255, 0, 0.2);
+        color: var(--accent);
+      }
+
+      /* FEATURES LIST */
+      .feat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 28px;
+      }
+      .feat-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 18px 20px;
+        background: var(--card);
+        border: 1px solid var(--border);
+      }
+      .feat-item:hover {
+        border-color: rgba(200, 255, 0, 0.15);
+      }
+      .feat-ico {
+        font-size: 20px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .feat-head {
+        font-family: "Syne", sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .feat-desc {
+        color: var(--dim);
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+
+      /* SCREENSHOT MOCKUPS */
+      .screenshots {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 28px;
+      }
+      .screenshot {
+        background: var(--card);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        position: relative;
+      }
+      .screenshot-bar {
+        background: #1a1a2e;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-bottom: 1px solid var(--border);
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+      .dot.r {
+        background: #ff5f57;
+      }
+      .dot.y {
+        background: #febc2e;
+      }
+      .dot.g {
+        background: #28c840;
+      }
+      .screenshot-url {
+        margin-left: 8px;
+        font-size: 10px;
+        color: var(--dim);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 3px 10px;
+        border-radius: 2px;
+        flex: 1;
+      }
+      .screenshot-body {
+        padding: 20px;
+        min-height: 160px;
+      }
+      .screen-label {
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+      }
+      .screen-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .s-block {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 2px;
+      }
+      .s-head {
+        height: 28px;
+        background: rgba(200, 255, 0, 0.05);
+        border: 1px solid rgba(200, 255, 0, 0.1);
+        margin-bottom: 6px;
+      }
+      .s-sidebar {
+        width: 80px;
+        min-height: 100px;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+      }
+      .s-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .s-line {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 1px;
+      }
+      .s-line.accent {
+        background: rgba(200, 255, 0, 0.12);
+      }
+      .s-table-head {
+        height: 24px;
+        background: rgba(200, 255, 0, 0.06);
+        border: 1px solid rgba(200, 255, 0, 0.1);
+        margin-bottom: 4px;
+      }
+      .s-table-row {
+        height: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        margin-bottom: 3px;
+      }
+      .screenshot-cap {
+        padding: 10px 16px;
+        font-size: 11px;
+        color: var(--dim);
+        border-top: 1px solid var(--border);
+        letter-spacing: 0.5px;
+      }
+
+      /* CHALLENGES + LEARNINGS */
+      .chal-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 28px;
+      }
+      .chal-item {
+        padding: 24px 26px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 2px solid rgba(200, 255, 0, 0.4);
+      }
+      .chal-title {
+        font-family: "Syne", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .chal-body {
+        color: var(--dim2);
+        font-size: 13.5px;
+        line-height: 1.75;
+      }
+      .chal-body strong {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .learn-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        margin-top: 28px;
+      }
+      .learn-card {
+        padding: 20px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        text-align: center;
+      }
+      .learn-ico {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+      .learn-head {
+        font-family: "Syne", sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .learn-body {
+        color: var(--dim);
+        font-size: 11.5px;
+        line-height: 1.55;
+      }
+
+      /* BACK */
+      .cs-back-footer {
+        text-align: center;
+        padding: 60px 0 80px;
+        border-top: 1px solid var(--border);
+        margin: 0 64px;
+      }
+      .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 28px;
+        border: 1px solid rgba(200, 255, 0, 0.35);
+        color: var(--accent);
+        font-family: "Syne", sans-serif;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transition: all 0.25s;
+      }
+      .btn-back:hover {
+        background: rgba(200, 255, 0, 0.07);
+        border-color: var(--accent);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: none;
+      }
+      .d1 {
+        transition-delay: 0.1s;
+      }
+      .d2 {
+        transition-delay: 0.2s;
+      }
+      .d3 {
+        transition-delay: 0.3s;
+      }
+
+      @media (max-width: 768px) {
+        .cs-hero,
+        .cs-body,
+        .cs-back-footer {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .cs-nav {
+          padding: 18px 24px;
+        }
+        .screenshots {
+          grid-template-columns: 1fr;
+        }
+        .arch-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cur"></div>
+    <div id="cur-ring"></div>
+
+    <!-- NAV -->
+    <nav class="cs-nav">
+      <a href="../portfolio.html" class="cs-nav-back">← Back to Portfolio</a>
+      <span class="cs-nav-name">Kaushik Rajbongshi</span>
+    </nav>
+
+    <!-- HERO -->
+    <div class="cs-hero">
+      <div class="cs-project-tag">Case Study · 01</div>
+      <h1 class="cs-title">
+        Academic<br /><span class="outline">Module Tracker</span>
+      </h1>
+      <p class="cs-subtitle">
+        A role-based faculty management system built for universities —
+        empowering HODs and teachers to track syllabus coverage, visualize
+        academic progress, and export institutional reports.
+      </p>
+      <div class="cs-meta-row">
+        <div class="cs-meta-item">
+          <div class="label">Type</div>
+          <div class="value">Full Stack Web App</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="label">Role</div>
+          <div class="value">Solo Developer</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="label">Status</div>
+          <div class="value">In Active Development</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="label">Stack</div>
+          <div class="cs-tags">
+            <span class="cs-tag">Next.js 16</span
+            ><span class="cs-tag">JavaScript</span>
+            <span class="cs-tag">Prisma</span><span class="cs-tag">MySQL</span>
+            <span class="cs-tag">JWT</span><span class="cs-tag">jsPDF</span
+            ><span class="cs-tag">Tailwind</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-body">
+      <!-- PROBLEM -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">01 — Problem</div>
+        <h2 class="cs-section-title">What Problem<br />Does This Solve?</h2>
+        <p class="cs-text">
+          In most universities, tracking whether teachers have actually covered
+          the syllabus is a
+          <strong>manual, spreadsheet-driven nightmare</strong>. HODs have no
+          real-time visibility. Teachers lack a structured way to log their
+          coverage. At the end of term, generating reports is time-consuming and
+          error-prone.
+        </p>
+        <p class="cs-text">
+          Academic Module Tracker replaces this entire workflow with a
+          <em>role-based digital system</em> where everyone has the right
+          access, the right views, and the right data — always up to date.
+        </p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="ico">😵</div>
+            <div class="head">No Real-Time Visibility</div>
+            <div class="body">
+              HODs couldn't see teacher progress until the end of term — by then
+              it was too late to intervene.
+            </div>
+          </div>
+          <div class="problem-card">
+            <div class="ico">📊</div>
+            <div class="head">Manual Reports</div>
+            <div class="body">
+              Generating Excel reports meant manually compiling data from
+              multiple teachers — hours of work.
+            </div>
+          </div>
+          <div class="problem-card">
+            <div class="ico">🔓</div>
+            <div class="head">No Access Control</div>
+            <div class="body">
+              Any teacher could theoretically see or modify any other teacher's
+              data. No RBAC, no audit trail.
+            </div>
+          </div>
+          <div class="problem-card">
+            <div class="ico">📉</div>
+            <div class="head">Coverage Gaps</div>
+            <div class="body">
+              Topics left uncovered were only discovered at the end of semester
+              — too late to fix.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARCHITECTURE -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">02 — System Architecture</div>
+        <h2 class="cs-section-title">How It's<br />Built</h2>
+        <p class="cs-text">
+          The system is a <strong>monolithic Next.js application</strong> with
+          server-side API routes, JWT-based authentication, and a Prisma ORM
+          layer connecting to MySQL. All pages are server-rendered for
+          performance and SEO.
+        </p>
+        <div class="arch-diagram">
+          <br /><br />
+          <div class="arch-layers">
+            <div
+              class="arch-row"
+              style="
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 0;
+              "
+            >
+              <div class="arch-box frontend">
+                <div class="box-label">HOD Dashboard</div>
+                <div class="box-tech">Next.js + React</div>
+              </div>
+              <div class="arch-box frontend">
+                <div class="box-label">Teacher Portal</div>
+                <div class="box-tech">Next.js + React</div>
+              </div>
+              <div class="arch-box auth">
+                <div class="box-label">Auth Guard</div>
+                <div class="box-tech">JWT Middleware</div>
+              </div>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div
+              class="arch-row"
+              style="
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 0;
+              "
+            >
+              <div class="arch-box backend">
+                <div class="box-label">API Routes</div>
+                <div class="box-tech">Next.js /api + Zod Validation</div>
+              </div>
+              <div class="arch-box backend">
+                <div class="box-label">Report Engine</div>
+                <div class="box-tech">jsPDF + XLSX Export</div>
+              </div>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div
+              class="arch-row"
+              style="grid-template-columns: 1fr; gap: 12px; margin-bottom: 0"
+            >
+              <div class="arch-box db">
+                <div class="box-label">MySQL Database</div>
+                <div class="box-tech">Prisma ORM · MariaDB Adapter</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="cs-text">
+          RBAC is enforced at the middleware level — every API route checks the
+          decoded JWT token and validates the user's role before allowing any
+          operation.
+        </p>
+      </div>
+
+      <!-- DATABASE DESIGN -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">03 — Database Design</div>
+        <h2 class="cs-section-title">Schema &amp;<br />Data Model</h2>
+        <p class="cs-text">
+          The schema is designed around a hierarchical academic structure:
+          <strong
+            >Admin → Faculty (HOD/Teacher) → Department → Course → Topic →
+            SubTopic</strong
+          >. Coverage is event-based — each teaching session creates a new
+          <em>TopicCoverage</em> or <em>SubTopicCoverage</em> record with a real
+          date, enabling a full audit trail rather than just a boolean flag.
+        </p>
+        <p class="cs-text">
+          The system also tracks
+          <strong>Students, AcademicYears, and Semesters</strong> — supporting
+          batch-wise history, backlog/repeat status, and multi-year academic
+          records. SubTopics support a
+          <strong>self-referencing hierarchy</strong> (<code>parentId</code>)
+          for nested content structures.
+        </p>
+
+        <!-- Relation map -->
+        <div
+          style="
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            margin: 0 0 28px;
+            font-size: 12px;
+            color: var(--dim2);
+            line-height: 2;
+          "
+        >
+          <div
+            style="
+              font-size: 10px;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+              color: var(--dim);
+              margin-bottom: 12px;
+            "
+          >
+            Entity Relationship Overview
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              gap: 6px;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 11px;
+              font-weight: 700;
+            "
+          >
+            <span style="color: var(--accent)">Admin</span>
+            <span style="color: var(--dim)">manages</span>
+            <span style="color: var(--accent)">Faculty</span>
+            <span style="color: var(--dim)">→ role:</span>
+            <span
+              style="
+                border: 1px solid rgba(200, 255, 0, 0.3);
+                padding: 1px 8px;
+                color: var(--accent);
+              "
+              >HOD | TEACHER</span
+            >
+            <span style="color: var(--dim)">→ belongs to</span>
+            <span style="color: var(--accent)">Department</span>
+            <span style="color: var(--dim)">→ has</span>
+            <span style="color: var(--accent)">Course</span>
+            <span style="color: var(--dim)">→ has</span>
+            <span style="color: var(--accent)">Topic</span>
+            <span style="color: var(--dim)">→ has</span>
+            <span style="color: var(--accent)">SubTopic</span>
+            <span style="color: var(--dim)">(self-ref)</span>
+          </div>
+          <div
+            style="
+              margin-top: 8px;
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              gap: 6px;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 11px;
+              font-weight: 700;
+            "
+          >
+            <span style="color: var(--accent)">AcademicYear</span>
+            <span style="color: var(--dim)">ties together</span>
+            <span style="color: var(--accent)">FacultyCourse</span>
+            <span style="color: var(--dim)">+</span>
+            <span style="color: var(--accent)">TopicCoverage</span>
+            <span style="color: var(--dim)">+</span>
+            <span style="color: var(--accent)">Student</span>
+            <span style="color: var(--dim)">→ history via</span>
+            <span style="color: var(--accent)">StudentAcademicYear</span>
+          </div>
+        </div>
+
+        <div
+          class="db-grid"
+          style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr))"
+        >
+          <div class="db-table">
+            <div class="db-table-head">Faculty</div>
+            <div class="db-field">
+              <span>id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>faculty_id</span><span class="ftype">String @unique</span>
+            </div>
+            <div class="db-field">
+              <span>email</span><span class="ftype">String @unique</span>
+            </div>
+            <div class="db-field">
+              <span>username / name</span><span class="ftype">String</span>
+            </div>
+            <div class="db-field">
+              <span>role</span><span class="fkey">FK → Faculty_Role</span>
+            </div>
+            <div class="db-field">
+              <span>dept_id</span><span class="fkey">FK → Department</span>
+            </div>
+            <div class="db-field">
+              <span>status</span><span class="ftype">A | D</span>
+            </div>
+            <div class="db-field">
+              <span>password</span><span class="ftype">String (hashed)</span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">Department</div>
+            <div class="db-field">
+              <span>dept_id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>dept_name</span><span class="ftype">String</span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ courses[]</span><span></span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ faculties[]</span><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">Course</div>
+            <div class="db-field">
+              <span>course_id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>course_name</span><span class="ftype">String</span>
+            </div>
+            <div class="db-field">
+              <span>semester_id</span><span class="fkey">FK → Semester</span>
+            </div>
+            <div class="db-field">
+              <span>dept_id</span><span class="fkey">FK → Department</span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ topics[], facultyCourses[]</span><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">AcademicYear</div>
+            <div class="db-field">
+              <span>id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>label</span><span class="ftype">"2023-2024" @unique</span>
+            </div>
+            <div class="db-field">
+              <span>isActive</span><span class="ftype">Boolean</span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ facultyCourses[], students[]</span><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">
+              FacultyCourse
+              <span style="font-size: 9px; opacity: 0.6">(mapping)</span>
+            </div>
+            <div class="db-field">
+              <span>facultyId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>courseId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>academicYearId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span style="font-size: 10px; color: var(--dim)"
+                >@@unique[faculty, course, year]</span
+              ><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">Topic</div>
+            <div class="db-field">
+              <span>topic_id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>topic_name</span><span class="ftype">String</span>
+            </div>
+            <div class="db-field">
+              <span>topic_description</span><span class="ftype">Text?</span>
+            </div>
+            <div class="db-field">
+              <span>courseId</span><span class="fkey">FK → Course</span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ subtopics[]</span><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">
+              SubTopic
+              <span style="font-size: 9px; opacity: 0.6">(self-ref)</span>
+            </div>
+            <div class="db-field">
+              <span>subtopic_id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>subtopic_name</span><span class="ftype">String</span>
+            </div>
+            <div class="db-field">
+              <span>topicId</span><span class="fkey">FK → Topic</span>
+            </div>
+            <div class="db-field">
+              <span>parentId</span><span class="fkey">FK → SubTopic</span>
+            </div>
+            <div
+              class="db-field"
+              style="color: var(--dim); font-size: 11px; font-style: italic"
+            >
+              <span>→ children[] (nested)</span><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">TopicCoverage</div>
+            <div class="db-field">
+              <span>topicId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>facultyId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>courseId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>semesterId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>academicYearId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>taughtOn</span><span class="ftype">Date (actual)</span>
+            </div>
+            <div class="db-field">
+              <span>remark</span><span class="ftype">String?</span>
+            </div>
+            <div class="db-field">
+              <span style="font-size: 10px; color: var(--dim)"
+                >@@unique[topic+faculty+course+sem+year]</span
+              ><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">SubTopicCoverage</div>
+            <div class="db-field">
+              <span>subtopicId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>facultyId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>courseId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>semesterId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>academicYearId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>taughtOn</span><span class="ftype">Date</span>
+            </div>
+            <div class="db-field">
+              <span style="font-size: 10px; color: var(--dim)"
+                >@@unique[subtopic+faculty+course+sem+year]</span
+              ><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">Student</div>
+            <div class="db-field">
+              <span>studentID</span><span class="ftype">cuid() @unique</span>
+            </div>
+            <div class="db-field">
+              <span>email</span><span class="ftype">String @unique</span>
+            </div>
+            <div class="db-field">
+              <span>currentSem</span><span class="fkey">FK → Semester</span>
+            </div>
+            <div class="db-field">
+              <span>academicYearId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>status</span><span class="ftype">A | D</span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">StudentAcademicYear</div>
+            <div class="db-field">
+              <span>studentId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>academicYearId</span><span class="fkey">FK</span>
+            </div>
+            <div class="db-field">
+              <span>status</span><span class="ftype">REGULAR | BACKLOG</span>
+            </div>
+            <div class="db-field">
+              <span></span><span class="ftype">| REPEAT | PASSED</span>
+            </div>
+            <div class="db-field">
+              <span style="font-size: 10px; color: var(--dim)"
+                >@@unique[student+year]</span
+              ><span></span>
+            </div>
+          </div>
+
+          <div class="db-table">
+            <div class="db-table-head">Admin</div>
+            <div class="db-field">
+              <span>id</span><span class="fkey">PK</span>
+            </div>
+            <div class="db-field">
+              <span>username</span><span class="ftype">String @unique</span>
+            </div>
+            <div class="db-field">
+              <span>email</span><span class="ftype">String @unique</span>
+            </div>
+            <div class="db-field">
+              <span>status</span><span class="ftype">A | D</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Design callout -->
+        <div
+          style="
+            margin-top: 24px;
+            padding: 20px 24px;
+            border: 1px solid rgba(200, 255, 0, 0.15);
+            background: rgba(200, 255, 0, 0.03);
+          "
+        >
+          <div
+            style="
+              font-size: 10px;
+              letter-spacing: 2px;
+              text-transform: uppercase;
+              color: var(--accent);
+              margin-bottom: 10px;
+            "
+          >
+            Key Design Decisions
+          </div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              font-size: 13px;
+              color: var(--dim2);
+            "
+          >
+            <div>
+              →
+              <strong style="color: var(--text)">Event-based coverage</strong>
+              (not boolean) — each <code>taughtOn</code> date creates a new
+              record, enabling full teaching history and timeline views.
+            </div>
+            <div>
+              →
+              <strong style="color: var(--text)"
+                >5-column composite unique</strong
+              >
+              on coverage tables prevents duplicate entries across faculty,
+              course, semester, and academic year simultaneously.
+            </div>
+            <div>
+              →
+              <strong style="color: var(--text)"
+                >Self-referencing SubTopic</strong
+              >
+              (<code>parentId → subtopic_id</code>) allows infinitely nested
+              topic trees without a fixed depth limit.
+            </div>
+            <div>
+              →
+              <strong style="color: var(--text)">StudentAcademicYear</strong>
+              bridge table tracks REGULAR / BACKLOG / REPEAT / PASSED status per
+              year — full academic history preserved.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">04 — Features</div>
+        <h2 class="cs-section-title">What It<br />Does</h2>
+        <div class="feat-list">
+          <div class="feat-item">
+            <div class="feat-ico">🔐</div>
+            <div>
+              <div class="feat-head">Role-Based Access Control</div>
+              <div class="feat-desc">
+                HODs see department-wide dashboards and can manage faculty.
+                Teachers only see their own assigned courses. JWT tokens carry
+                role claims validated on every API call.
+              </div>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-ico">📈</div>
+            <div>
+              <div class="feat-head">Real-Time Coverage Tracking</div>
+              <div class="feat-desc">
+                Teachers mark topics and sub-topics as covered with timestamps.
+                Progress bars update immediately, giving HODs live visibility
+                into syllabus completion.
+              </div>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-ico">📄</div>
+            <div>
+              <div class="feat-head">PDF & Excel Report Export</div>
+              <div class="feat-desc">
+                Generate polished institutional reports in navy/gold branding
+                with jsPDF and the XLSX library. HODs can export per-teacher,
+                per-course, or department-wide summaries.
+              </div>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-ico">📋</div>
+            <div>
+              <div class="feat-head">DataTables Integration</div>
+              <div class="feat-desc">
+                Large datasets of faculty, courses, and coverage entries are
+                rendered in interactive DataTables with search, sort, and
+                pagination — all reconciled with React's DOM carefully to avoid
+                conflicts.
+              </div>
+            </div>
+          </div>
+          <div class="feat-item">
+            <div class="feat-ico">🏗️</div>
+            <div>
+              <div class="feat-head">HOD Management Panel</div>
+              <div class="feat-head"></div>
+              <div class="feat-desc">
+                HODs can assign teachers to courses, manage semesters and
+                academic years, and add new departments — all through a
+                dedicated admin interface.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREENSHOTS -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">05 — Screenshots</div>
+        <h2 class="cs-section-title">UI Walkthrough</h2>
+        <div class="screenshots">
+          <div class="screenshot">
+            <div class="screenshot-bar">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <div class="screenshot-url">localhost:3000/dashboard/faculty/hod/overview</div>
+            </div>
+            <div class="screenshot-body" style="padding: 0">
+              <img
+                src="/screenshots/amt/HOD_overview.png"
+                alt="HOD Dashboard"
+                style="width: 100%; height: auto; display: block"
+              />
+            </div>
+            <div class="screenshot-cap">
+              HOD's Department overview with coverage progress
+            </div>
+          </div>
+          <div class="screenshot">
+            <div class="screenshot-bar">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <div class="screenshot-url">localhost:3000/dashboard/faculty/course-coverage</div>
+            </div>
+            <div class="screenshot-body" style="padding: 0">
+              <img
+                src="/screenshots/amt/course_progress.png"
+                alt="HOD Dashboard"
+                style="width: 100%; height: auto; display: block"
+              />
+            </div>
+            <div class="screenshot-cap">
+              Topic coverage checklist per assigned course
+            </div>
+          </div>
+          <div class="screenshot">
+            <div class="screenshot-bar">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <div class="screenshot-url">localhost:3000/dashboard/faculty/report</div>
+            </div>
+            <div class="screenshot-body" style="padding: 0">
+              <img
+                src="/screenshots/amt/report.png"
+                alt="HOD Dashboard"
+                style="width: 100%; height: auto; display: block"
+              />
+            </div>
+            <div class="screenshot-cap">
+              Export to PDF or Excel with one click
+            </div>
+          </div>
+          <div class="screenshot">
+            <div class="screenshot-bar">
+              <div class="dot r"></div>
+              <div class="dot y"></div>
+              <div class="dot g"></div>
+              <div class="screenshot-url">localhost:3000/dashboard/admin</div>
+            </div>
+            <div class="screenshot-body" style="padding: 0">
+              <img
+                src="/screenshots/amt/admin_dashboard.png"
+                alt="HOD Dashboard"
+                style="width: 100%; height: auto; display: block"
+              />
+            </div>
+            <div class="screenshot-cap">
+              Admin dashboard for manages the whole system
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHALLENGES -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">06 — Challenges</div>
+        <h2 class="cs-section-title">Hard Problems<br />I Solved</h2>
+        <div class="chal-list">
+          <div class="chal-item">
+            <div class="chal-title">
+              DataTables + React DOM Reconciliation Conflict
+            </div>
+            <div class="chal-body">
+              DataTables.net manipulates the DOM directly after initialization.
+              React's virtual DOM doesn't know about these changes, causing
+              <strong>reconciliation errors and duplicate rendering</strong>
+              when state updates triggered re-renders. I resolved this by using
+              refs to detect DataTables initialization state and conditionally
+              destroying/reinitializing the table on data changes — preventing
+              React and DataTables from fighting over the same DOM nodes.
+            </div>
+          </div>
+          <div class="chal-item">
+            <div class="chal-title">
+              Hierarchical Coverage Percentage Calculation
+            </div>
+            <div class="chal-body">
+              Calculating "how much has a teacher covered" requires rolling up
+              SubTopic coverage → Topic → Course → Department. A naive approach
+              would hit the DB dozens of times. I solved this with
+              <strong>Prisma's nested include queries</strong> combined with
+              server-side aggregation, computing all percentages in a single
+              database round-trip.
+            </div>
+          </div>
+          <div class="chal-item">
+            <div class="chal-title">Role-Based Middleware Without NextAuth</div>
+            <div class="chal-body">
+              I chose <strong>custom JWT middleware</strong> over NextAuth for
+              fine-grained control. The challenge was protecting nested API
+              routes consistently. I built a reusable
+              <code>withRoleGuard()</code> higher-order function that wraps any
+              API handler, decodes the token from cookies, validates the role,
+              and returns 403 if unauthorized.
+            </div>
+          </div>
+          <div class="chal-item">
+            <div class="chal-title">
+              Styled PDF Export Matching Institutional Branding
+            </div>
+            <div class="chal-body">
+              jsPDF's raw API is verbose and error-prone for complex layouts. I
+              built a <strong>custom PDF builder abstraction</strong> that
+              handles headers, footers, dynamic tables, and page breaks
+              automatically — all styled with the university's navy and gold
+              color palette using jsPDF-autotable.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEARNINGS -->
+      <div class="cs-section reveal">
+        <div class="cs-section-num">07 — What I Learned</div>
+        <h2 class="cs-section-title">Key<br />Takeaways</h2>
+        <div class="learn-grid">
+          <div class="learn-card">
+            <div class="learn-ico">🏗️</div>
+            <div class="learn-head">Schema-First Design</div>
+            <div class="learn-body">
+              Getting the Prisma schema right upfront saved weeks of
+              refactoring. The hierarchical model was designed on paper before
+              writing a single line of code.
+            </div>
+          </div>
+          <div class="learn-card">
+            <div class="learn-ico">🔒</div>
+            <div class="learn-head">Auth Without Libraries</div>
+            <div class="learn-body">
+              Building JWT auth from scratch deepened my understanding of token
+              lifecycle, refresh strategies, and cookie security flags.
+            </div>
+          </div>
+          <div class="learn-card">
+            <div class="learn-ico">⚛️</div>
+            <div class="learn-head">3rd Party DOM Libraries in React</div>
+            <div class="learn-body">
+              DataTables taught me the hard way to always isolate imperative DOM
+              libraries behind refs and effect cleanup.
+            </div>
+          </div>
+          <div class="learn-card">
+            <div class="learn-ico">📐</div>
+            <div class="learn-head">Abstraction Pays Off</div>
+            <div class="learn-body">
+              Building a reusable PDF builder and role-guard HOF made adding new
+              reports and protected routes trivial — no repetition.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-back-footer reveal">
+      <p
+        style="
+          color: var(--dim);
+          font-size: 12px;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          margin-bottom: 24px;
+        "
+      >
+        Other Projects
+      </p>
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+          flex-wrap: wrap;
+        "
+      >
+        <a href="doclocker.html" class="btn-back">DocLocker Case Study →</a>
+        <a href="echopost.html" class="btn-back">EchoPost Case Study →</a>
+        <a href="../portfolio.html" class="btn-back">← Back to Portfolio</a>
+      </div>
+    </div>
+
+    <script>
+      const cur = document.getElementById("cur"),
+        ring = document.getElementById("cur-ring");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cur.style.left = mx + "px";
+        cur.style.top = my + "px";
+      });
+      (function loop() {
+        rx += (mx - rx) * 0.13;
+        ry += (my - ry) * 0.13;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(loop);
+      })();
+      const obs = new IntersectionObserver(
+        (es) => {
+          es.forEach((e) => {
+            if (e.isIntersecting) e.target.classList.add("in");
+          });
+        },
+        { threshold: 0.08 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+    </script>
+  </body>
+</html>
